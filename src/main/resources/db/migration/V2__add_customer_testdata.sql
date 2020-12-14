@@ -1,0 +1,3 @@
+INSERT INTO customers (first_name, last_name, street, zip_code, city) VALUES ( 'Tobias', 'Erdle', 'Kreuzstr. 16', '80331', 'Muenchen' );
+INSERT INTO customers (first_name, last_name, street, zip_code, city) VALUES ( 'Hans', 'Dampf', 'Bergweg 2', '54321', 'Alpendorf' );
+INSERT INTO customers (first_name, last_name, street, zip_code, city) VALUES ( 'Hans', 'Mustermann', 'Musterstrasse 1', '12345', 'Musterstadt' );

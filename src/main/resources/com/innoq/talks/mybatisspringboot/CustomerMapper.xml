@@ -1,0 +1,62 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.innoq.talks.mybatisspringboot.CustomerMapper">
+
+    <select id="findById" resultMap="customer">
+        SELECT * FROM customers WHERE id = #{id}
+    </select>
+
+    <!-- Slightly over-engineered search with generic SQL to create optimized queries. -->
+    <select id="searchByNames" resultMap="customer">
+        SELECT * FROM customers
+
+        <if test="firstName != null and lastName != null">
+            WHERE <include refid="likeFirstName"/> AND <include refid="likeLastName"/>
+        </if>
+
+        <if test="firstName != null and lastName == null">
+            WHERE <include refid="likeFirstName"/>
+        </if>
+
+        <if test="firstName == null and lastName != null">
+            WHERE <include refid="likeLastName"/>
+        </if>
+    </select>
+
+    <sql id="likeFirstName">
+        first_name LIKE '%' || #{firstName} || '%'
+    </sql>
+
+    <sql id="likeLastName">
+        last_name LIKE '%' || #{lastName} || '%'
+    </sql>
+
+    <!-- Insert statement which takes the generated id and places it into the customer. Works with setters as well as without them ;)  -->
+    <insert id="insertCustomer" parameterType="com.innoq.talks.mybatisspringboot.Customer" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        INSERT INTO customers (first_name, last_name) VALUES (#{firstName}, #{lastName})
+    </insert>
+
+    <delete id="deleteCustomer">
+        DELETE FROM customers WHERE id = #{id}
+    </delete>
+
+    <!-- Result-Map for the Customer domain object. Uses the constructor to set values to avoid setters.   -->
+    <resultMap id="customer" type="com.innoq.talks.mybatisspringboot.Customer">
+        <constructor>
+            <idArg column="id" name="id"/>
+            <arg column="first_name" name="firstName"/>
+            <arg column="last_name" name="lastName"/>
+            <arg resultMap="address" name="address"/>
+        </constructor>
+    </resultMap>
+
+    <!-- Result-Map for the embedded Address domain object. Uses the constructor to set values to avoid setters.   -->
+    <resultMap id="address" type="com.innoq.talks.mybatisspringboot.Address">
+        <constructor>
+            <arg column="zip_code" name="zipCode"/>
+            <arg column="city" name="city"/>
+            <arg column="street" name="street"/>
+        </constructor>
+    </resultMap>
+</mapper>
